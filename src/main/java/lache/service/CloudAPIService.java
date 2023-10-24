@@ -20,36 +20,18 @@ public class CloudAPIService {
         this.repository = repository;
     }
 
-    /*@Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        User user = userRepository.findByUser(username);
-        if( user == null )
-            throw new UsernameNotFoundException(username);
-
-        return org.springframework.security.core.userdetails.User
-                .builder()
-                .username(user.getUser())
-                .password(user.getPassword())
-                .roles("USER")
-                .build();
-    } */
-
-    public void uploadFile(MultipartFile file, String login) { //String fileName,
+    public void uploadFile(MultipartFile file, String login) {
         repository.uploadFile(file, login);
-        //return "Заглушка service uploadFile -> \n" + repository.uploadFile() ;
     }
 
 
     public void deleteFile(String fileName, String login) {
         repository.deleteFile(fileName, login);
-        //return "Заглушка service deleteFile -> \n" + repository.deleteFile();
     }
 
 
     public Resource dowloadFile(String fileName, String login) throws IOException {
         return repository.dowloadFile(fileName, login);
-        //return "Заглушка service dowloadFile -> \n" + repository.dowloadFile();
     }
 
 

@@ -30,21 +30,13 @@ public class CloudAPIRepository {
     private Environment env;
     private String dir;
 
-    //private final UserRepository userRepository;
-
-    public CloudAPIRepository(Environment env) {  //, UserRepository userRepository
+    public CloudAPIRepository(Environment env) {
         this.env = env;
-        //this.userRepository = userRepository;
-        this.dir = env.getProperty("cloud-storage-directory"); // @Value("${cloud-storage-directory:cloud}")
+        this.dir = env.getProperty("cloud-storage-directory");
         if (dir == null || dir.isEmpty()) {
             dir = "cloud";
         }
     }
-
-  /*  public User getUserByLogin(String login) {
-        var user = userRepository.findByLogin(login);
-        return user.get();
-    }*/
 
     public void uploadFile(MultipartFile file, String login) {
         if (!file.isEmpty()) {
@@ -84,7 +76,6 @@ public class CloudAPIRepository {
                 throw new ErrorDeleteFile("Error delete file", 0); //TODO: возможно 0 заменить на значение
             }
         }
-        //return "Заглушка repository deleteFile";
     }
 
 
@@ -94,44 +85,35 @@ public class CloudAPIRepository {
                     .resolve(Paths.get(login))
                     .resolve(Paths.get(fileName))
                     .normalize().toAbsolutePath();
-            //Path path = Paths.get(getClass().getResource("/com/baeldung/produceimage/data.txt").toURI());
-            //???MultipartResolver resolver = new StandardServletMultipartResolver()
+
             ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(destinationFile));
             return resource;
-            /*InputStream in = getClass()
-                    .getResourceAsStream(destinationFile.toString());
-            return IOUtils.toByteArray(in);*/
-            //return "Заглушка repository dowloadFile";
-
-        }
-        else {
-            throw new ErrorUploadFile("Error download file", 0); //TODO: возможно 0 заменить на значение
+        } else {
+            throw new ErrorUploadFile("Error download file", 0); //TODO: возможно 0 заменить на значение ?
         }
     }
 
-        public String editFile() {
-            return "Заглушка repository editFile";
-        }
+    public String editFile() {
+        return "Заглушка repository editFile";
+    }
 
 
-        public List<FileListItem> getAllFiles (String login){
-            Path destinationFolder = Path.of(dir)
-                    .resolve(Paths.get(login))
-                    .normalize().toAbsolutePath();
-            System.out.println(destinationFolder.toString());
-            File folder = new File(destinationFolder.toString());
-            File[] files = folder.listFiles();
-            List<FileListItem> filesList = new ArrayList<>();
-            for (File file : files) {
-                if (file.isFile()) {
-                    System.out.println(file.getName() + " " + file.length());
-                    filesList.add(new FileListItem(file.getName(), file.length()));
-                }
+    public List<FileListItem> getAllFiles(String login) {
+        Path destinationFolder = Path.of(dir)
+                .resolve(Paths.get(login))
+                .normalize().toAbsolutePath();
+        System.out.println(destinationFolder.toString());
+        File folder = new File(destinationFolder.toString());
+        File[] files = folder.listFiles();
+        List<FileListItem> filesList = new ArrayList<>();
+        for (File file : files) {
+            if (file.isFile()) {
+                System.out.println(file.getName() + " " + file.length());
+                filesList.add(new FileListItem(file.getName(), file.length()));
             }
-            System.out.println(filesList.toString());
-            return filesList;
-
-            //return "Заглушка repository getAllFiles";
-
         }
+        System.out.println(filesList.toString());
+        return filesList;
+
     }
+}
