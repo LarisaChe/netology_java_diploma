@@ -14,15 +14,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-//  https://bootify.io/spring-security/rest-api-spring-security-with-jwt.html
+//реализация JWT основана на примере с  https://bootify.io/spring-security/rest-api-spring-security-with-jwt.html
 @Component
-public class JwtRequestFilter  extends OncePerRequestFilter {
+public class JwtRequestFilter extends OncePerRequestFilter {
 
-
-    //@Autowired
     private final JwtTokenService jwtTokenService;
 
-    //@Autowired
     private final JwtUserDetailsService jwtUserDetailsService;
 
     public JwtRequestFilter(JwtTokenService jwtTokenService, JwtUserDetailsService jwtUserDetailsService) {
@@ -33,14 +30,16 @@ public class JwtRequestFilter  extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
                                     final FilterChain chain) throws ServletException, IOException {
-        // look for Bearer auth header
-        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header == null || !header.startsWith("Bearer ")) {
+
+        final String header = request.getHeader("auth-token");
+
+        if (header == null  || !header.startsWith("Bearer ")) {
             chain.doFilter(request, response);
             return;
         }
 
         final String token = header.substring(7);
+
         final String username = jwtTokenService.validateTokenAndGetUsername(token);
         if (username == null) {
             // validation failed or token expired

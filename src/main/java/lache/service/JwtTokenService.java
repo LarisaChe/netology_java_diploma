@@ -10,11 +10,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class JwtTokenService {
 
-    private static final Duration JWT_TOKEN_VALIDITY = Duration.ofMinutes(3);
+    private static final Duration JWT_TOKEN_VALIDITY = Duration.ofMinutes(60);
+
+    private static List<String> blackTokens = new ArrayList<>();
 
     private final Algorithm hmac512;
     private final JWTVerifier verifier;
@@ -34,7 +38,14 @@ public class JwtTokenService {
                 .sign(this.hmac512);
     }
 
+    public void addBlackTokens(String token) {
+        blackTokens.add(token);
+    }
+
     public String validateTokenAndGetUsername(final String token) {
+        if (blackTokens.contains(token)) {
+            return null;
+        }
         try {
             return verifier.verify(token).getSubject();
         } catch (final JWTVerificationException verificationEx) {
