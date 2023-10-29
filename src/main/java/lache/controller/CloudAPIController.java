@@ -4,11 +4,11 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lache.model.FileListItem;
-import lache.security.AuthenticationRequest;
-import lache.security.AuthenticationResponse;
+import lache.authentication.AuthenticationRequest;
+import lache.authentication.AuthenticationResponse;
 import lache.service.CloudAPIService;
-import lache.service.JwtTokenService;
-import lache.service.JwtUserDetailsService;
+import lache.authentication.JwtTokenService;
+import lache.authentication.JwtUserDetailsService;
 import org.springframework.core.io.Resource;
 
 import org.springframework.http.HttpStatus;
@@ -44,9 +44,11 @@ public class CloudAPIController {
         this.jwtUserDetailsService = jwtUserDetailsService;
     }
 
+
     @PostMapping("/file")  //"/cloud/file")
     @RolesAllowed({"USER"})
-    public @ResponseBody String uploadFile(@RequestParam("filename") String filename, @RequestBody MultipartFile file, Authentication authentication) {
+    public @ResponseBody String uploadFile(@RequestParam("filename") String filename,
+                                           @RequestBody MultipartFile file, Authentication authentication) {
         final String login = authentication.getName();
         service.uploadFile(file, login);
         return "Success upload " + file.getOriginalFilename();
@@ -62,14 +64,15 @@ public class CloudAPIController {
 
     @GetMapping(value = "/file", produces = "multipart/mixed")
     @RolesAllowed({"USER"})
-    public @ResponseBody Resource dowloadFile(@RequestParam("filename") String fileName, Authentication authentication) throws IOException {
+    public @ResponseBody Resource downloadFile(@RequestParam("filename") String fileName, Authentication authentication) throws IOException {
         final String login = authentication.getName();
-        return service.dowloadFile(fileName, login);
+        return service.downloadFile(fileName, login);
     }
 
     @PutMapping("/file")
     @RolesAllowed({"USER"})
-    public String editFile(@RequestParam("filename") String filename, @RequestBody Map<String, String> newFileName, Authentication authentication) {
+    public String editFile(@RequestParam("filename") String filename,
+                           @RequestBody Map<String, String> newFileName, Authentication authentication) {
         final String login = authentication.getName();
         return service.editFile(filename, newFileName.get("filename"), login);
     }
@@ -99,8 +102,12 @@ public class CloudAPIController {
     @GetMapping("/login")
     public ResponseEntity<String> logout(@RequestParam String logout, HttpServletRequest request) {
         final String header = request.getHeader("auth-token");
-        jwtTokenService.addBlackTokens(header.substring(7));
-        return ResponseEntity.ok("Success logout2");
+        if (header.startsWith("Bearer ")) {
+            jwtTokenService.addBlackTokens(header.substring(7));
+        } else {
+            jwtTokenService.addBlackTokens(header);
+        }
+        return ResponseEntity.ok("Success logout");
     }
 
 }

@@ -41,14 +41,15 @@ public class CloudAPIRepository {
                     .resolve(Paths.get(login))
                     .resolve(Paths.get(file.getOriginalFilename()))
                     .normalize().toAbsolutePath();
-
             try (InputStream inputStream = file.getInputStream()) {
                 destinationFile.toFile().mkdirs();
                 Files.copy(inputStream, destinationFile,
                         StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                throw new ErrorUploadFile("Failed to store file.", 0); 
+                throw new ErrorUploadFile("Failed to store file.", 0);
             }
+        } else {
+            throw new ErrorUploadFile("File is null.", 0);
         }
     }
 
@@ -70,10 +71,12 @@ public class CloudAPIRepository {
             } catch (IOException e) {
                 throw new ErrorDeleteFile("Error delete file", 0);
             }
+        } else {
+            throw new ErrorDeleteFile("Error delete file", 0);
         }
     }
 
-    public Resource dowloadFile(String fileName, String login) throws IOException {
+    public Resource downloadFile(String fileName, String login) throws IOException {
         if (fileName != null && !fileName.isEmpty()) {
             Path destinationFile = Path.of(dir)
                     .resolve(Paths.get(login))

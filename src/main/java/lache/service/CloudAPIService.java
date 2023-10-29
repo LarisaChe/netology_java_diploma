@@ -26,8 +26,8 @@ public class CloudAPIService {
         repository.deleteFile(fileName, login);
     }
 
-    public Resource dowloadFile(String fileName, String login) throws IOException {
-        return repository.dowloadFile(fileName, login);
+    public Resource downloadFile(String fileName, String login) throws IOException {
+        return repository.downloadFile(fileName, login);
     }
 
     public String editFile(String oldFilename, String newFilename, String login) {

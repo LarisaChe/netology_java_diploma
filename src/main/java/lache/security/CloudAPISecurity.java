@@ -1,9 +1,10 @@
 package lache.security;
 
-import lache.service.JwtRequestFilter;
+import lache.authentication.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,10 +28,15 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class CloudAPISecurity {
 
     @Autowired
+    private Environment env;
+    @Autowired
     private JwtRequestFilter jwtRequestFilter;
+    private String frontUrl;
 
-    public CloudAPISecurity(JwtRequestFilter jwtRequestFilter) {
+    public CloudAPISecurity(JwtRequestFilter jwtRequestFilter, Environment env) {
         this.jwtRequestFilter = jwtRequestFilter;
+        this.env = env;
+        this.frontUrl = env.getProperty("cloud-front-url");
     }
 
     @Bean
@@ -42,7 +48,7 @@ public class CloudAPISecurity {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://127.0.0.1:8080", "http://localhost"));
+        configuration.setAllowedOrigins(Arrays.asList(frontUrl, "http://localhost")); // localhost нужен для тестирования через Postman  "http://localhost:8080"
 
         configuration.setAllowedHeaders(Arrays.asList(
                 "Access-Control-Allow-Origin",

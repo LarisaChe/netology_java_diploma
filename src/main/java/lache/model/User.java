@@ -13,9 +13,6 @@ public class User {
     @Column(name = "password", length = 255, nullable = false)
     private String password;
 
-    @Column(name = "salt", length = 1024)
-    private String salt;
-
     @Column(name = "role", length = 32)
     private String role;
 
@@ -42,14 +39,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
     }
 
     public String getRole() {

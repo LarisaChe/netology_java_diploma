@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-    @Query(value = "SELECT u.login, u.password, u.salt, u.role  FROM cloud.users u WHERE UPPER(u.login) = UPPER(:login) ", nativeQuery = true)
+    @Query(value = "SELECT u.login, u.password, u.role  FROM cloud.users u WHERE UPPER(u.login) = UPPER(:login) ", nativeQuery = true)
     Optional<User> findByLogin(@Param("login") String login);
 }

@@ -1,0 +1,46 @@
+version: "1"
+services:
+  postgresql:
+    image: postgres:latest
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=12345678
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./src/main/resources/sql/sql_init.sql:/docker-entrypoint-initdb.d/1-sql_init.sql
+  backend:
+    image: openjdk:17-jdk-alpine
+    expose:
+      - 8090
+    ports:
+      - 8090:8090
+    volumes:
+      - ./build/libs/netology_java_diploma-0.0.1-SNAPSHOT.jar:/cloud.jar
+    command: ['java', '-jar', '/cloud.jar']
+    depends_on:
+      postgresql:
+        condition: service_healthy
+  frontend:
+    image: node:18.18
+    ports:
+      - 8080:8080
+    #container_name: nodejs-image
+    working_dir: /usr/src/app
+    environment:
+      NODE_PATH: /usr/src/app/node_modules/
+    volumes:
+      - ./netology-diplom-frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    command: bash -c "npm install && npm run serve"
+    depends_on:
+      backend:
+        condition: service_started
